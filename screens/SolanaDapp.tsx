@@ -29,14 +29,33 @@ export default function SolanaDapp() {
       style={styles.container}
       originWhitelist={['*']}
       ref={webview}
-      source={{ uri: 'https://facewall-calindra.herokuapp.com/facewall/game/' }}
+      nativeConfig={{props: {webContentsDebuggingEnabled: true}}} 
+      source={{ 
+        // uri: 'https://facewall-calindra.herokuapp.com/facewall/game/'
+        uri: 'http://172.16.1.9:1234/'
+      }}
       onNavigationStateChange={newNavState => {
         console.log(newNavState.url)
         const script = `
-        window.SolPeerDapp = {}
+        window.SolPeerDapp = {};
         window.SolPeerDapp.getPublicKey = () => {
           return Promise.resolve('${pubKeyStr}')
-        }
+        };
+        (function () {
+          var solana = {};
+          solana.isConnected = true;
+          solana.on = (evName, fn) => {
+              if (evName === 'connect') {
+                  fn();
+              }
+          };
+          solana.off = () => { };
+          solana.publicKeyString = "${pubKeyStr}";
+          solana.isCalindraMagic = true;
+          window.calindraMagic = solana;
+          var WALLET_NAME_KEY = 'walletName';
+          localStorage.setItem(WALLET_NAME_KEY, JSON.stringify("Magic Wallet"));
+        })();
         true;
         `
         setTimeout(() => {
