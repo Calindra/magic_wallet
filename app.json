@@ -2,7 +2,7 @@
   "expo": {
     "name": "Calindra Magic Wallet",
     "slug": "magic_wallet",
-    "version": "1.0.3",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -11,9 +11,6 @@
       "image": "./assets/images/splash-horizon.png",
       "resizeMode": "cover",
       "backgroundColor": "#0b191c"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
       "**/*"

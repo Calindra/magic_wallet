@@ -1,3 +1,4 @@
+import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';

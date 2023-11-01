@@ -16,7 +16,7 @@ nacl.setPRNG((x, n) => {
 
 // mudando para "confirmed", pois "finalized" leva uns 30s :-/
 // obviamente ainda assim seria muito mais rapido que ETH/BTC
-let connection = new web3.Connection(web3.clusterApiUrl('testnet'), 'confirmed');
+let connection = new web3.Connection(web3.clusterApiUrl('devnet'), 'confirmed');
 
 const SPL_PUBLIC_KEY = new web3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
 export default class AccountService {
