@@ -19,7 +19,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "br.com.calindra.magicwallet"
     },
     "android": {
       "package": "br.com.calindra.magic_wallet",
@@ -30,6 +31,11 @@
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1ba84166-6b7f-451a-9db7-8542d28d1771"
+      }
     }
   }
 }
