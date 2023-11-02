@@ -1,17 +1,20 @@
 import * as web3 from '@solana/web3.js';
 import * as SecureStore from 'expo-secure-store';
-import * as Random from 'expo-random';
 import * as nacl from 'tweetnacl';
 import { ITokenAccount } from '../models/ITokenAccount';
 import TokenService from './TokenService';
+import prand from 'pure-rand';
 
 const { base58_to_binary, binary_to_base58 } = require('base58-js')
 
 nacl.setPRNG((x, n) => {
-    const arr = Random.getRandomBytes(n)
+    let rng1 = prand.xoroshiro128plus(42)
     for (let i = 0; i < n; i++) {
-        x[i] = arr[i]
+        const [firstDiceValue, rng2] = prand.uniformIntDistribution(0, 7, rng1); // value in {1..6}, here: 2
+        rng1 = rng2
+        x[i] = firstDiceValue
     }
+    console.log(x)
 })
 
 // mudando para "confirmed", pois "finalized" leva uns 30s :-/

@@ -1,4 +1,4 @@
-import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { createAssociatedTokenAccountInstruction, createTransferInstruction, getAssociatedTokenAddress, getMint } from "@solana/spl-token";
 import AccountService from "./AccountService";
 import * as web3 from '@solana/web3.js';
 import { createMemoInstruction } from "../memo";
@@ -66,47 +66,41 @@ export default class TransactionService {
         );
         return await connection.getParsedConfirmedTransaction(signature)
     }
-    static async transferToken(tokenMintAddress: string, amount: number, destPublicKey: web3.PublicKey, keypair: web3.Signer, memo: string = '') {
-        const mintPublicKey = new web3.PublicKey(tokenMintAddress);
-        const mintToken = new Token(
-            AccountService.getConnection(),
-            mintPublicKey,
-            TOKEN_PROGRAM_ID,
-            keypair // the wallet owner will pay to transfer and to create recipients associated token account if it does not yet exist.
-        );
-        const fromTokenAccount = await mintToken.getOrCreateAssociatedAccountInfo(keypair.publicKey);
 
+    static async transferToken(tokenMintAddress: string, amount: number, fromTokenAccount: web3.PublicKey, destPublicKey: web3.PublicKey, keypair: web3.Signer, memo: string = '') {
+        console.log(`transferToken(${tokenMintAddress}, ${amount})...`)
+        const mintPublicKey = new web3.PublicKey(tokenMintAddress);
+        console.log(`fromTokenAccount ${fromTokenAccount}`)
+        console.log(`destPublicKey ${destPublicKey}`)
+        const mint = await getMint(AccountService.getConnection(), mintPublicKey)
+        console.log('mint.decimals', mint.decimals)
+        const amountNum = amount * Math.pow(10, mint.decimals)
+        console.log(`amountNum = ${amountNum}`)
         // Get the derived address of the destination wallet which will hold the custom token
-        const associatedDestinationTokenAddr = await Token.getAssociatedTokenAddress(
-            mintToken.associatedProgramId,
-            mintToken.programId,
+        const associatedDestinationTokenAddr = await getAssociatedTokenAddress(
             mintPublicKey,
-            destPublicKey
+            destPublicKey,
         );
         const receiverAccount = await AccountService.getConnection().getAccountInfo(associatedDestinationTokenAddr);
         const instructions: web3.TransactionInstruction[] = [];
         if (receiverAccount === null) {
             console.log('Criando conta do destinatario')
             instructions.push(
-                Token.createAssociatedTokenAccountInstruction(
-                    mintToken.associatedProgramId,
-                    mintToken.programId,
-                    mintPublicKey,
+                createAssociatedTokenAccountInstruction(
+                    keypair.publicKey,
                     associatedDestinationTokenAddr,
                     destPublicKey,
-                    keypair.publicKey
+                    mintPublicKey,
                 )
             )
         }
 
         instructions.push(
-            Token.createTransferInstruction(
-                TOKEN_PROGRAM_ID,
-                fromTokenAccount.address,
+            createTransferInstruction(
+                fromTokenAccount,
                 associatedDestinationTokenAddr,
                 keypair.publicKey,
-                [],
-                amount
+                amountNum
             )
         );
 
@@ -122,6 +116,6 @@ export default class TransactionService {
             transaction,
             [keypair]
         );
-        console.log('confirmado.')
+        console.log('confirmado.', res)
     }
 }

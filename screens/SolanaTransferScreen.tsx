@@ -9,6 +9,7 @@ import AuthContext from '../src/contexts/AuthContext';
 import AccountService from '../src/solana/services/AccountService';
 import TransactionService from '../src/solana/services/TransactionService';
 import { StackActions } from '@react-navigation/native';
+import { getMint } from '@solana/spl-token';
 
 const darkStyles = StyleSheet.create({
     container: {
@@ -72,6 +73,7 @@ export default function SolanaTransferScreen({ route, navigation }: any) {
     const styles = colorScheme === 'dark' ? darkStyles : whiteStyles;
     const { payment } = route.params || {}
     const [pubKeyStr, setPubKeyStr] = useState(payment.to || '');
+    const [accountPubKey, setAccountPubKey] = useState(payment.accountPubKey || '');
     const [memo, setMemo] = useState(payment.memo || '');
     const [coin, setCoin] = useState(payment.coin || '');
     const [amount, setAmount] = useState('');
@@ -100,9 +102,9 @@ export default function SolanaTransferScreen({ route, navigation }: any) {
         const destPublicKey = new PublicKey(pubKeyStr)
 
         if (coin) {
-            const amountNum = +amount * LAMPORTS_PER_SOL
-            await TransactionService.transferToken(coin, amountNum, destPublicKey, keypair, memo)
-            console.log('enviado', amountNum)
+            const fromAccount = new PublicKey(accountPubKey)
+            await TransactionService.transferToken(coin, +amount, fromAccount, destPublicKey, keypair, memo)
+            console.log('enviado', amount)
         } else {
             const amountNum = +amount * LAMPORTS_PER_SOL
             await TransactionService.transfer(keypair, destPublicKey, amountNum, memo)

@@ -204,6 +204,7 @@ export default function SolanaWallet({ navigation, route }: RootTabScreenProps<'
                     onPress={() => {
                         navigation.navigate(...['QRCodeReader', {
                             tokenPublicKey: tokenAccount.token.toBase58(),
+                            accountPubKey: tokenAccount.publicKey.toBase58(),
                         }] as any)
                     }}
                 >

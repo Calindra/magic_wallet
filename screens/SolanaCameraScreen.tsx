@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { Camera } from 'expo-camera';
+import { Camera, CameraType } from 'expo-camera';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function App({ navigation, route }: any) {
     const [hasPermission, setHasPermission] = useState(null as any);
-    const [type, setType] = useState(Camera.Constants.Type.back);
-    const { tokenPublicKey } = route.params || {}
+    const [type, _setType] = useState(CameraType.back);
+    const { tokenPublicKey, accountPubKey } = route.params || {}
     const isFocused = useIsFocused();
 
     const onCodeScanned = ({ data }: any) => {
@@ -18,6 +18,7 @@ export default function App({ navigation, route }: any) {
             if (tokenPublicKey) {
                 payment.coin = tokenPublicKey
             }
+            payment.accountPubKey = accountPubKey
             navigation.navigate(...['StackTransfer', { payment }] as any)
         } catch (e) {
             console.log('error', e)
