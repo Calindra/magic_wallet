@@ -1,6 +1,11 @@
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 import { PublicKey } from '@solana/web3.js';
+// import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
+// import { fetchDigitalAsset, mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata'
+// import { PublicKey as MPublicKey } from '@metaplex-foundation/umi'
 
+// Use the RPC endpoint of your choice.
+// const umi = createUmi('https://api.devnet.solana.com').use(mplTokenMetadata())
 
 let tokenPromise = new TokenListProvider().resolve()
 let cached: any = {}
@@ -12,7 +17,7 @@ export default class TokenService {
             tokenPromise = new TokenListProvider().resolve()
         }
         const tokens = await tokenPromise
-        const tokenList = tokens.filterByClusterSlug('mainnet-beta').getList();
+        const tokenList = tokens.getList()
         return tokenList
     }
 
@@ -30,5 +35,9 @@ export default class TokenService {
         cached[tokenPubKey] = token
         return token
     }
+
+    // static async fetchDigitalAsset(mint: PublicKey) {
+    //     return await fetchDigitalAsset(umi, mint.toBase58() as MPublicKey)
+    // }
 
 }

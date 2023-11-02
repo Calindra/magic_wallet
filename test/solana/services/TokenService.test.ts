@@ -1,5 +1,6 @@
 import { PublicKey } from "@solana/web3.js"
 import TokenService from "../../../src/solana/services/TokenService"
+import { PublicKey as MPublicKey } from '@metaplex-foundation/umi'
 
 
 describe('TokenService', () => {
@@ -25,5 +26,13 @@ describe('TokenService', () => {
 
         const token2 = await TokenService.findByPublicKey(mint)
         expect(token2).toBeNull()
+    })
+
+    it('should find the asset', async () => {
+        const mint = new PublicKey('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU')
+        const res = await TokenService.fetchDigitalAsset(mint).catch(e => e)
+        console.log(res.metadata?.name)
+        const token = await TokenService.findByPublicKey(mint)
+        console.log(token)
     })
 })
