@@ -5,6 +5,7 @@ import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
 import { PublicKey as MPublicKey, Umi } from '@metaplex-foundation/umi'
 
 import { fetchDigitalAsset, mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata'
+import ClusterService from './ClusterService';
 
 let tokenPromise = new TokenListProvider().resolve()
 let cached: any = {}
@@ -15,7 +16,7 @@ export default class TokenService {
 
     static getUmi() {
         if (!this.umi) {
-            this.umi = createUmi('https://api.devnet.solana.com').use(mplTokenMetadata())
+            this.umi = createUmi(ClusterService.getClusterApiUrl()).use(mplTokenMetadata())
         }
         return this.umi
     }

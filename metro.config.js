@@ -9,7 +9,9 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     // fix Unable to resolve "@metaplex-foundation/umi/serializers"
     if (moduleName === '@metaplex-foundation/umi/serializers') {
         moduleName = '@metaplex-foundation/umi-serializers'
+        return context.resolveRequest(context, moduleName, platform);
     }
+
     return context.resolveRequest(context, moduleName, platform);
 }
 

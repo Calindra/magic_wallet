@@ -4,6 +4,7 @@ import * as nacl from 'tweetnacl';
 import { ITokenAccount } from '../models/ITokenAccount';
 import TokenService from './TokenService';
 import prand from 'pure-rand';
+import ClusterService from './ClusterService';
 
 const { base58_to_binary, binary_to_base58 } = require('base58-js')
 
@@ -17,18 +18,15 @@ nacl.setPRNG((x, n) => {
     console.log(x)
 })
 
-// mudando para "confirmed", pois "finalized" leva uns 30s :-/
-// obviamente ainda assim seria muito mais rapido que ETH/BTC
-let connection = new web3.Connection(web3.clusterApiUrl('devnet'), 'confirmed');
 
 const SPL_PUBLIC_KEY = new web3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
 export default class AccountService {
     static remoteAccountChangeListener(accountListenerId: number) {
-        connection.removeAccountChangeListener(accountListenerId)
+        ClusterService.getConnection().removeAccountChangeListener(accountListenerId)
     }
 
     static async getTokenAccountsByOwner(publicKey: web3.PublicKey): Promise<ITokenAccount[]> {
-        const rawTokenAccountResult = await connection.getParsedTokenAccountsByOwner(publicKey, {
+        const rawTokenAccountResult = await ClusterService.getConnection().getParsedTokenAccountsByOwner(publicKey, {
             programId: SPL_PUBLIC_KEY
         })
 
@@ -47,15 +45,15 @@ export default class AccountService {
     }
 
     static getConnection() {
-        return connection
+        return ClusterService.getConnection()
     }
 
     static getTokenAccountBalance(publicKey: web3.PublicKey) {
-        return connection.getTokenAccountBalance(publicKey)
+        return ClusterService.getConnection().getTokenAccountBalance(publicKey)
     }
 
     static listenAccount(publicKey: web3.PublicKey, callback: any) {
-        const id = connection.onAccountChange(publicKey, (accountInfo, context) => {
+        const id = ClusterService.getConnection().onAccountChange(publicKey, (accountInfo, context) => {
             callback()
         })
         return id
@@ -101,7 +99,7 @@ export default class AccountService {
     static async getBalance(publicKey: web3.PublicKey) {
         // meio zuado pq vc pode ver o saldo de qq pessoa...
         // console.log(`getBalance ${publicKey.toBase58()}...`)
-        const balance = await connection.getBalance(publicKey)
+        const balance = await ClusterService.getConnection().getBalance(publicKey)
         // console.log('balance', balance)
         return balance
     }
