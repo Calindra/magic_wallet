@@ -1,23 +1,10 @@
 import * as web3 from '@solana/web3.js';
 import * as SecureStore from 'expo-secure-store';
-import * as nacl from 'tweetnacl';
 import { ITokenAccount } from '../models/ITokenAccount';
 import TokenService from './TokenService';
-import prand from 'pure-rand';
 import ClusterService from './ClusterService';
 
 const { base58_to_binary, binary_to_base58 } = require('base58-js')
-
-nacl.setPRNG((x, n) => {
-    let rng1 = prand.xoroshiro128plus(42)
-    for (let i = 0; i < n; i++) {
-        const [firstDiceValue, rng2] = prand.uniformIntDistribution(0, 7, rng1); // value in {1..6}, here: 2
-        rng1 = rng2
-        x[i] = firstDiceValue
-    }
-    console.log(x)
-})
-
 
 const SPL_PUBLIC_KEY = new web3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
 export default class AccountService {
